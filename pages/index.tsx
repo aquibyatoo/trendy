@@ -1,7 +1,12 @@
 import HomeScreen from 'src/screens/home'
 import { client } from 'src/utils/api-client';
+import { Product } from 'types/product';
 
-export const getServerSideProps = async (ctx) => {
+type HomeProps = {
+  products: [Product]
+}
+
+export const getServerSideProps = async () => {
   const products = await client.product.fetchAll().catch(err => console.log({ err }))
 
   return {
@@ -10,8 +15,8 @@ export const getServerSideProps = async (ctx) => {
 
 }
 
-export default function Home({ products }) {
+export default function Home(props: HomeProps) {
   return (
-    <HomeScreen products={products} />
+    <HomeScreen products={props.products} />
   )
 }
