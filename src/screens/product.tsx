@@ -1,7 +1,10 @@
 import { Grid, Image, Button, Text, Box } from '@chakra-ui/react'
 import * as React from 'react'
+import { useCart } from 'src/context/cart-context'
 import Layout from 'src/hocs/layout'
+import withContext from 'src/hocs/with-context'
 import { client } from 'src/utils/api-client'
+import { getCheckoutId } from 'src/utils/checkout'
 import { Product as ProductType } from 'types/product'
 
 type ProductProps = {
@@ -10,15 +13,20 @@ type ProductProps = {
 
 const Product = (props: ProductProps) => {
   const { product: { images, description, id, title, variants } } = props
+  // @ts-ignore
+  const { onOpen } = useCart()
 
-  const addProductToCheckout = () => {
+  const addProductToCheckout = async () => {
     const variantId = variants[0].id
     const lineItems = [{
       variantId,
       quantity: 1
     }]
 
-    // const checkout = client.checkout.addLineItems(lineItems)
+    const checkoutId = getCheckoutId() || "" // todo 
+
+    const checkout = await client.checkout.addLineItems(checkoutId, lineItems).catch(err => console.log(err))
+    onOpen()
   }
 
   return (
@@ -38,4 +46,4 @@ const Product = (props: ProductProps) => {
   )
 }
 
-export default Product
+export default withContext(Product)

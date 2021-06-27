@@ -12,9 +12,7 @@ const NavBar = () => {
       <Link href='/'>
         <Text fontSize="4xl" as="samp" cursor='pointer'>Couture</Text>
       </Link>
-      <CartProvider>
-        <Cart />
-      </CartProvider>
+      <Cart />
     </Flex>
   )
 }
