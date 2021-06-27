@@ -12,8 +12,8 @@ type HomeScreenProps = {
 const HomeScreen = (props: HomeScreenProps) => (
   <div>
     <Head>
-      <title>Trendy</title>
-      <meta name="description" content="Trending around you!" />
+      <title>Couture</title>
+      <meta name="description" content="Couture - the business of designing, making, and selling fashionable custom-made clothing." />
       <link rel="icon" href="/favicon.ico" />
     </Head>
     <NavBar />
