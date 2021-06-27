@@ -13,10 +13,15 @@ import {
   Icon
 } from "@chakra-ui/react"
 import { MdShoppingBasket } from 'react-icons/md'
+import { useCart } from 'src/context/cart-context'
+import { client } from 'src/utils/api-client'
 
 
 const ShoppingCart = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { checkoutId } = useCart()
+
+  // fetch inline items here
   return (
     <>
       <Icon fill='white' as={MdShoppingBasket} cursor='pointer' w={30} h={30} onClick={onOpen} />
@@ -36,7 +41,7 @@ const ShoppingCart = () => {
           </DrawerBody>
 
           <DrawerFooter>
-            <Button >Checkout</Button>
+            <Button w={'100%'}>Checkout</Button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

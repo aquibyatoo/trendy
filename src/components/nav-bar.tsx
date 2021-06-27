@@ -3,6 +3,7 @@ import { Flex, Icon, Text } from '@chakra-ui/react'
 import { MdMenu } from 'react-icons/md'
 import Cart from 'src/components/cart'
 import Link from 'next/link'
+import { CartProvider } from 'src/context/cart-context'
 
 const NavBar = () => {
   return (
@@ -11,7 +12,9 @@ const NavBar = () => {
       <Link href='/'>
         <Text fontSize="4xl" as="samp" cursor='pointer'>Couture</Text>
       </Link>
-      <Cart />
+      <CartProvider>
+        <Cart />
+      </CartProvider>
     </Flex>
   )
 }
