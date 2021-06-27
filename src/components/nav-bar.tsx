@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Flex, Icon, Text } from '@chakra-ui/react'
-import { MdMenu, MdShoppingBasket } from 'react-icons/md'
+import { MdMenu } from 'react-icons/md'
 import Cart from 'src/components/cart'
 
 const NavBar = () => {
