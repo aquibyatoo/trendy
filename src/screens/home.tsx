@@ -1,30 +1,20 @@
-import * as React from 'react'
-import Head from 'next/head'
 import Product from 'src/components/product'
 import { Grid } from '@chakra-ui/react'
 import { Product as ProductType } from 'types/product'
-import NavBar from 'src/components/nav-bar'
+import Layout from 'src/hocs/layout'
 
 type HomeScreenProps = {
   products: [ProductType]
 }
 
 const HomeScreen = (props: HomeScreenProps) => (
-  <div>
-    <Head>
-      <title>Couture</title>
-      <meta name="description" content="Couture - the business of designing, making, and selling fashionable custom-made clothing." />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
-    <NavBar />
-    <main className="main">
-      <Grid templateColumns="repeat(3, 1fr)">
-        {
-          props.products.map(product => <Product product={product} key={product.id} />)
-        }
-      </Grid>
-    </main>
-  </div>
+  <Layout>
+    <Grid templateColumns="repeat(3, 1fr)">
+      {
+        props.products.map(product => <Product product={product} key={product.id} />)
+      }
+    </Grid>
+  </Layout>
 )
 
 export default HomeScreen
