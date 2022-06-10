@@ -1,6 +1,6 @@
-import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
-import * as React from 'react'
-import { CartProvider } from 'src/context/cart-context'
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import * as React from "react";
+import { CartProvider } from "src/context/cart-context";
 
 export default (Component: any) =>
   class extends React.Component {
@@ -9,6 +9,6 @@ export default (Component: any) =>
         <CartProvider>
           <Component {...this.props} />
         </CartProvider>
-      )
+      );
     }
-  }
+  };
