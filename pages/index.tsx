@@ -9,7 +9,7 @@ type HomeProps = {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const products = await client.product
-    .fetchAll()
+    .fetchAll(100)
     .catch((err) => console.log({ err }));
 
   return {
