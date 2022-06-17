@@ -11,7 +11,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
 
   const product = await client.product
-    .fetchByHandle(params.id)
+    .fetchByHandle(params?.id as string)
     .catch((err) => console.log(err));
 
   return {
@@ -20,5 +20,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function Home(props: ProductProps) {
-  return <ProductScreen product={props.product} />;
+  return <ProductScreen {...props} />;
 }
