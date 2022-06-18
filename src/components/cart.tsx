@@ -14,33 +14,38 @@ import {
 } from "@chakra-ui/react";
 import { MdShoppingBasket } from "react-icons/md";
 import { useCart } from "src/context/cart-context";
-import { generateCheckoutId, getCheckoutId } from "src/utils/checkout";
-import { client } from "src/utils/api-client";
+import { Product } from "types/product";
+import CartProduct from "./cart-product";
+import { openTab } from "src/utils/open-new-tab";
+import { fetchProduct } from "src/services/product";
 
 const ShoppingCart = () => {
-  // @ts-ignore
-  const { isOpen, onOpen, onClose } = useCart();
-  const [checkout, setCheckout] = React.useState({});
-
-  React.useEffect(() => {
-    isOpen && fetchLineItemsHandler();
-  }, [isOpen]);
-
-  const fetchLineItemsHandler = async () => {
-    if (!getCheckoutId()) {
-      await generateCheckoutId();
-    } else {
-      // @ts-ignore
-      const checkout = await client.checkout
-        .fetch(getCheckoutId() as string)
-        .catch((err) => console.log(err));
-      // @ts-ignore
-      setCheckout(checkout);
-    }
-  };
+  const { isOpen, onOpen, onClose, cartItems } = useCart();
+  const [isLoading, onLoading] = React.useState(false);
 
   const getCartContent = () => {
-    return <div>You cart is empty, why to not add some items!</div>;
+    if (cartItems.length === 0) {
+      return <div>You cart is empty, why to not add some items!</div>;
+    }
+
+    return cartItems.map((item: Product) => (
+      <CartProduct product={item} key={item.id} />
+    ));
+  };
+
+  const handleCheckout = async () => {
+    onLoading(true);
+
+    // try {
+    //   const product = await fetchProduct(handle);
+    //   const cartInput = createCartInput(product);
+    //   const cartId = await createCart(cartInput);
+    //   const checkoutUrl = await createCheckoutUrl(cartId);
+
+    //   openTab(checkoutUrl);
+    // } catch (error) {
+    //   onFetchError(true);
+    // }
   };
 
   return (
@@ -62,7 +67,7 @@ const ShoppingCart = () => {
           <DrawerBody>{getCartContent()}</DrawerBody>
 
           <DrawerFooter>
-            <Button w={"100%"} as={"a"} href={"/"} target="_blank">
+            <Button w={"100%"} onClick={handleCheckout} isLoading={isLoading}>
               Checkout
             </Button>
           </DrawerFooter>

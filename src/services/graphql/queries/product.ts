@@ -59,3 +59,22 @@ export const FETCH_PRODUCT = `query getProductById($slug: String!) {
         }
       }
   }`;
+
+export const FETCH_ALL = `query getAllProducts {
+  products(first: 10) {
+    edges {
+      node {
+        id
+        images(first: 1) {
+          edges {
+            node {
+              src
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+
+}`;

@@ -1,6 +1,6 @@
 import { request } from "src/utils/client";
 import { Product } from "types/product";
-import { FETCH_PRODUCT } from "./graphql/queries/product";
+import { FETCH_ALL, FETCH_PRODUCT } from "./graphql/queries/product";
 
 type FetchProductResponse = {
   data: {
@@ -8,7 +8,11 @@ type FetchProductResponse = {
   };
 };
 
-export const fetchAllProducts = () => [];
+export const fetchAllProducts = async () => {
+  const response = await request({ body: FETCH_ALL });
+
+  return response;
+};
 
 export const fetchProduct = async (handle: string): Promise<Product> => {
   const variables = { slug: handle };

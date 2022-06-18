@@ -1,10 +1,12 @@
 import { Grid, Image, Button, Text, Box } from "@chakra-ui/react";
 import * as React from "react";
+import { useCart } from "src/context/cart-context";
 import Layout from "src/hocs/layout";
 import withContext from "src/hocs/with-context";
 import { createCart, LineProduct } from "src/services/cart";
 import { createCheckoutUrl } from "src/services/checkout";
-import { fetchProduct } from "src/services/product";
+import { fetchAllProducts, fetchProduct } from "src/services/product";
+import { openTab } from "src/utils/open-new-tab";
 import { Product as ProductType } from "types/product";
 
 type ProductProps = {
@@ -18,6 +20,7 @@ const Product = (props: ProductProps) => {
 
   const [isLoading, onLoading] = React.useState(false);
   const [fetchError, onFetchError] = React.useState(false);
+  const { addToCart, onOpen } = useCart();
 
   const createCartInput = (product: any) => {
     const variant = product.variants.edges[0].node;
@@ -42,11 +45,6 @@ const Product = (props: ProductProps) => {
     };
   };
 
-  const openCheckoutInNewTab = (checkoutUrl: string) => {
-    const newWindow = window.open(checkoutUrl, "_blank", "noopener,noreferrer");
-    if (newWindow) newWindow.opener = null;
-  };
-
   const handleQuickBuy = async () => {
     onLoading(true);
     fetchError && onFetchError(false);
@@ -57,13 +55,20 @@ const Product = (props: ProductProps) => {
       const cartId = await createCart(cartInput);
       const checkoutUrl = await createCheckoutUrl(cartId);
 
-      openCheckoutInNewTab(checkoutUrl);
+      openTab(checkoutUrl);
     } catch (error) {
       onFetchError(true);
     }
 
     onLoading(false);
   };
+
+  const handleAddToCart = () => {
+    addToCart({ images, description, title, variants, handle });
+    onOpen();
+  };
+
+  const fetchAll = () => fetchAllProducts();
 
   return (
     <Layout>
@@ -75,15 +80,28 @@ const Product = (props: ProductProps) => {
           <Text fontSize="2xl">{title}</Text>
           <Text fontWeight={700}>${variants[0].price}</Text>
           <Text>{description}</Text>
+
           <Button
             onClick={handleQuickBuy}
             isLoading={isLoading}
             mt={6}
+            mr={6}
             colorScheme="teal"
             size="lg"
           >
             Quick Buy
           </Button>
+
+          <Button
+            onClick={handleAddToCart}
+            isLoading={isLoading}
+            mt={6}
+            colorScheme="teal"
+            size="lg"
+          >
+            Add to Cart
+          </Button>
+
           {fetchError && (
             <Text colorScheme={"orange"}>Failed to checkout. Try again!</Text>
           )}
