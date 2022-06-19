@@ -1,19 +1,24 @@
 import HomeScreen from "src/screens/home";
-import { client } from "src/utils/api-client";
-import { Product } from "types/product";
 import { GetServerSideProps } from "next";
+import { fetchAllProducts } from "src/services/product";
+import { Product } from "types/product";
 
 type HomeProps = {
-  products: [Product];
+  products: Product[];
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const products = await client.product
-    .fetchAll(100)
-    .catch((err) => console.log({ err }));
+  const products = await fetchAllProducts().catch((err) => ({
+    ...err,
+    fetchError: true,
+  }));
+
+  if (products.fetchError) {
+    return { props: { products: null } };
+  }
 
   return {
-    props: { products: JSON.parse(JSON.stringify(products)) },
+    props: { products },
   };
 };
 

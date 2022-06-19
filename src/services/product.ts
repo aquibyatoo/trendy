@@ -8,10 +8,18 @@ type FetchProductResponse = {
   };
 };
 
-export const fetchAllProducts = async () => {
-  const response = await request({ body: FETCH_ALL });
+type FetchProductsResponse = {
+  data: {
+    products: {
+      edges: Product[];
+    };
+  };
+};
 
-  return response;
+export const fetchAllProducts = async () => {
+  const response = await request<FetchProductsResponse>({ body: FETCH_ALL });
+
+  return response.data.products.edges;
 };
 
 export const fetchProduct = async (handle: string): Promise<Product> => {

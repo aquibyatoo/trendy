@@ -5,7 +5,7 @@ import Layout from "src/hocs/layout";
 import withContext from "src/hocs/with-context";
 import { createCart, LineProduct } from "src/services/cart";
 import { createCheckoutUrl } from "src/services/checkout";
-import { fetchAllProducts, fetchProduct } from "src/services/product";
+import { fetchProduct } from "src/services/product";
 import { openTab } from "src/utils/open-new-tab";
 import { Product as ProductType } from "types/product";
 
@@ -68,17 +68,23 @@ const Product = (props: ProductProps) => {
     onOpen();
   };
 
-  const fetchAll = () => fetchAllProducts();
+  const getPrice = () => {
+    return variants.edges[0]?.node.priceV2.amount;
+  };
+
+  const getImage = () => {
+    return images.edges[0]?.node.src;
+  };
 
   return (
     <Layout>
       <Grid templateColumns="repeat(2, 1fr)">
         <Box>
-          <Image src={images[0].src} alt={title}></Image>
+          <Image src={getImage()} alt={title}></Image>
         </Box>
         <Box p="2rem">
           <Text fontSize="2xl">{title}</Text>
-          <Text fontWeight={700}>${variants[0].price}</Text>
+          <Text fontWeight={700}>${getPrice()}</Text>
           <Text>{description}</Text>
 
           <Button

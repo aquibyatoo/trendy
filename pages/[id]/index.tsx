@@ -1,7 +1,7 @@
 import ProductScreen from "src/screens/product";
-import { client } from "src/utils/api-client";
 import { Product as ProductType } from "types/product";
 import { GetServerSideProps } from "next";
+import { fetchProduct } from "src/services/product";
 
 type ProductProps = {
   product: ProductType;
@@ -10,9 +10,14 @@ type ProductProps = {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
 
-  const product = await client.product
-    .fetchByHandle(params?.id as string)
-    .catch((err) => console.log(err));
+  const product = await fetchProduct(params?.id as string).catch((err) => ({
+    ...err,
+    fetchError: true,
+  }));
+
+  if (product.fetchError) {
+    return { props: { product: null } };
+  }
 
   return {
     props: { product: JSON.parse(JSON.stringify(product)) },
@@ -20,5 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function Home(props: ProductProps) {
+  if (!props.product === null) return <div>Failed to fetch product</div>;
+
   return <ProductScreen {...props} />;
 }

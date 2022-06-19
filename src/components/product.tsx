@@ -13,11 +13,10 @@ const Product = (props: ProductProps) => {
   } = props;
 
   const getImage = () => {
-    if (images && images.length > 0) {
-      return images[0].src;
-    }
-
-    return "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80";
+    return (
+      images.edges[0]?.node.src ||
+      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+    );
   };
 
   return (
