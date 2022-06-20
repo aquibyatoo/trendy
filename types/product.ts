@@ -52,7 +52,12 @@ export interface GetAllProduct {
     id: string;
     handle: string;
     description: string;
-    variants: Variant[];
+    variants: {
+      edges: Variant[];
+    };
     images: ImageEdges;
+    sellingPlanGroups: {
+      edges: SellingGroup[];
+    };
   };
 }
