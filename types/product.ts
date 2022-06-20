@@ -18,6 +18,20 @@ type Variant = {
   };
 };
 
+type SellingPlan = {
+  node: {
+    id: string;
+  };
+};
+
+type SellingGroup = {
+  node: {
+    sellingPlans: {
+      edges: SellingPlan[];
+    };
+  };
+};
+
 export interface Product {
   title: string;
   id: string;
@@ -27,6 +41,9 @@ export interface Product {
     edges: Variant[];
   };
   images: ImageEdges;
+  sellingPlanGroups: {
+    edges: SellingGroup[];
+  };
 }
 
 export interface GetAllProduct {

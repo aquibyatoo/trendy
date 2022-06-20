@@ -5,7 +5,6 @@ import Layout from "src/hocs/layout";
 import withContext from "src/hocs/with-context";
 import { createCart, LineProduct } from "src/services/cart";
 import { createCheckoutUrl } from "src/services/checkout";
-import { fetchProduct } from "src/services/product";
 import { openTab } from "src/utils/open-new-tab";
 import { Product as ProductType } from "types/product";
 
@@ -13,20 +12,29 @@ type ProductProps = {
   product: ProductType;
 };
 
+type Loader = boolean | "quickBuy" | "addToCart";
+
 const Product = (props: ProductProps) => {
   const {
-    product: { images, description, title, variants, handle },
+    product: {
+      images,
+      description,
+      title,
+      variants,
+      handle,
+      sellingPlanGroups,
+    },
   } = props;
 
-  const [isLoading, onLoading] = React.useState(false);
+  const [isLoading, onLoading] = React.useState<Loader>(false);
   const [fetchError, onFetchError] = React.useState(false);
   const { addToCart, onOpen } = useCart();
 
-  const createCartInput = (product: any) => {
-    const variant = product.variants.edges[0].node;
-    const sellingPlanGroups = product.sellingPlanGroups.edges[0]?.node;
-    const sellingPlanId = sellingPlanGroups
-      ? sellingPlanGroups.sellingPlans.edges[0].node.id
+  const createCartInput = () => {
+    const variant = variants.edges[0].node;
+    const sellingPlanList = sellingPlanGroups.edges[0]?.node;
+    const sellingPlanId = sellingPlanList
+      ? sellingPlanList.sellingPlans.edges[0].node.id
       : "";
 
     const lineProduct: LineProduct = {
@@ -46,12 +54,11 @@ const Product = (props: ProductProps) => {
   };
 
   const handleQuickBuy = async () => {
-    onLoading(true);
+    onLoading("quickBuy");
     fetchError && onFetchError(false);
 
     try {
-      const product = await fetchProduct(handle);
-      const cartInput = createCartInput(product);
+      const cartInput = createCartInput();
       const cartId = await createCart(cartInput);
       const checkoutUrl = await createCheckoutUrl(cartId);
 
@@ -64,7 +71,14 @@ const Product = (props: ProductProps) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ images, description, title, variants, handle });
+    addToCart({
+      images,
+      description,
+      title,
+      variants,
+      handle,
+      sellingPlanGroups,
+    });
     onOpen();
   };
 
@@ -89,7 +103,7 @@ const Product = (props: ProductProps) => {
 
           <Button
             onClick={handleQuickBuy}
-            isLoading={isLoading}
+            isLoading={isLoading === "quickBuy"}
             mt={6}
             mr={6}
             colorScheme="teal"
@@ -100,7 +114,7 @@ const Product = (props: ProductProps) => {
 
           <Button
             onClick={handleAddToCart}
-            isLoading={isLoading}
+            isLoading={isLoading === "addToCart"}
             mt={6}
             colorScheme="teal"
             size="lg"

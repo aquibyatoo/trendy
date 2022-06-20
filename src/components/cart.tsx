@@ -17,11 +17,13 @@ import { useCart } from "src/context/cart-context";
 import { Product } from "types/product";
 import CartProduct from "./cart-product";
 import { openTab } from "src/utils/open-new-tab";
-import { fetchProduct } from "src/services/product";
+import { createCart, LineProduct } from "src/services/cart";
+import { createCheckoutUrl } from "src/services/checkout";
 
 const ShoppingCart = () => {
   const { isOpen, onOpen, onClose, cartItems } = useCart();
   const [isLoading, onLoading] = React.useState(false);
+  const [fetchError, onFetchError] = React.useState(false);
 
   const getCartContent = () => {
     if (cartItems.length === 0) {
@@ -33,19 +35,66 @@ const ShoppingCart = () => {
     ));
   };
 
+  const createCartInput = () => {
+    const lineProducts = cartItems.map((item) => {
+      console.log({ item });
+
+      const variant = item.variants.edges[0].node;
+      const sellingPlanList = item.sellingPlanGroups.edges[0]?.node;
+      const sellingPlanId = sellingPlanList
+        ? sellingPlanList.sellingPlans.edges[0].node.id
+        : "";
+
+      const lineProduct: LineProduct = {
+        quantity: 1,
+        merchandiseId: variant.id,
+      };
+
+      if (sellingPlanId) lineProduct["sellingPlanId"] = sellingPlanId;
+
+      return lineProduct;
+    });
+
+    // const variant = variants.edges[0].node;
+    // const sellingPlanList = sellingPlanGroups.edges[0]?.node;
+    // const sellingPlanId = sellingPlanList
+    //   ? sellingPlanList.sellingPlans.edges[0].node.id
+    //   : "";
+
+    // const lineProduct: LineProduct = {
+    //   quantity: 1,
+    //   merchandiseId: variant.id,
+    // };
+
+    // if (sellingPlanId) lineProduct["sellingPlanId"] = sellingPlanId;
+
+    return {
+      lines: lineProducts,
+      attributes: {
+        key: "cart_attribute",
+        value: "This is a cart attribute",
+      },
+    };
+  };
+
   const handleCheckout = async () => {
     onLoading(true);
 
-    // try {
-    //   const product = await fetchProduct(handle);
-    //   const cartInput = createCartInput(product);
-    //   const cartId = await createCart(cartInput);
-    //   const checkoutUrl = await createCheckoutUrl(cartId);
+    fetchError && onFetchError(false);
 
-    //   openTab(checkoutUrl);
-    // } catch (error) {
-    //   onFetchError(true);
-    // }
+    try {
+      const cartInput = createCartInput();
+      const cartId = await createCart(cartInput);
+      const checkoutUrl = await createCheckoutUrl(cartId);
+
+      openTab(checkoutUrl);
+    } catch (error) {
+      console.log({ error });
+
+      onFetchError(true);
+    }
+
+    onLoading(false);
   };
 
   return (
@@ -67,8 +116,13 @@ const ShoppingCart = () => {
           <DrawerBody>{getCartContent()}</DrawerBody>
 
           <DrawerFooter>
-            <Button w={"100%"} onClick={handleCheckout} isLoading={isLoading}>
-              Checkout
+            <Button
+              w={"100%"}
+              onClick={handleCheckout}
+              isLoading={isLoading}
+              disabled={!cartItems.length}
+            >
+              {fetchError ? "Try again!" : "Checkout"}
             </Button>
           </DrawerFooter>
         </DrawerContent>
